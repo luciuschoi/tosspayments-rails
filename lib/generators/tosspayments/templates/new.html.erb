@@ -1,0 +1,87 @@
+<%# 토스페이먼츠 결제 페이지 %>
+<div class="payment-container" style="max-width: 500px; margin: 50px auto; padding: 20px;">
+  <h1 style="text-align: center; margin-bottom: 30px; color: #191919;">결제하기</h1>
+  
+  <div class="order-summary" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+    <h3 style="margin: 0 0 15px 0; color: #191919;">주문 정보</h3>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+      <span>상품명:</span>
+      <span><%= @order_name %></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+      <span>주문번호:</span>
+      <span><%= @order_id %></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-weight: bold; color: #3282f6;">
+      <span>결제금액:</span>
+      <span><%= "#{@amount.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, ',')}원" %></span>
+    </div>
+  </div>
+
+  <%# 토스페이먼츠 SDK 로드 %>
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+
+  <%# 결제 UI 컨테이너 %>
+  <div class="tosspayments-payment-wrapper">
+    <div id="payment-widget"></div>
+    <div id="agreement"></div>
+    <button onclick="requestTossPayment()" class="btn btn-primary tosspayments-payment-button" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px; border: none; border-radius: 6px; background-color: #3282f6; color: white; cursor: pointer;">
+      결제하기
+    </button>
+  </div>
+
+  <%# 토스페이먼츠 결제위젯 초기화 %>
+  <script>
+    const tossPayments = TossPayments('<%= Rails.application.credentials.tosspayments&.client_key || "YOUR_CLIENT_KEY" %>');
+    
+    // 결제위젯 초기화
+    const widgets = tossPayments.widgets({
+      customerKey: '<%= @customer_key || "ANONYMOUS" %>'
+    });
+    
+    // 결제 UI 렌더링
+    const paymentWidget = widgets.renderPaymentMethods({
+      selector: '#payment-widget',
+      variantKey: 'DEFAULT'
+    });
+    
+    // 이용약관 UI 렌더링
+    widgets.renderAgreement({
+      selector: '#agreement'
+    });
+  </script>
+
+  <%# 결제 요청 스크립트 %>
+  <script>
+    async function requestTossPayment() {
+      try {
+        await widgets.requestPayment({
+          orderId: '<%= @order_id %>',
+          orderName: '<%= @order_name %>',
+          successUrl: 'http://localhost:3000/payments/success',
+          failUrl: 'http://localhost:3000/payments/fail'
+        });
+      } catch (error) {
+        console.error('결제 요청 실패:', error);
+        alert('결제 요청에 실패했습니다.');
+      }
+    }
+  </script>
+</div>
+
+<style>
+  .tosspayments-payment-wrapper {
+    border: 1px solid #e5e8eb;
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+  }
+  
+  .tosspayments-payment-button:hover {
+    background-color: #1b64da !important;
+  }
+  
+  .tosspayments-payment-button:active {
+    background-color: #0b4cc4 !important;
+  }
+</style>

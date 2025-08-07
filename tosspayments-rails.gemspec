@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["lucius.choi@gmail.com"]
 
   spec.summary = "토스페이먼츠 온라인 결제 서비스를 위한 Rails gem"
-  spec.description = "토스페이먼츠 API를 사용하여 Rails 애플리케이션에서 온라인 결제 기능을 쉽게 구현할 수 있는 gem입니다. Rails 7+ 버전을 지원하며 Rails credentials를 통한 안전한 설정 관리를 제공합니다."
+  spec.description = "토스페이먼츠 API를 사용하여 Rails 애플리케이션에서 온라인 결제 기능을 쉽게 구현할 수 있는 gem입니다. Rails 7+ 및 Rails 8 버전을 지원하며 Rails credentials를 통한 안전한 설정 관리를 제공합니다."
   spec.homepage = "https://github.com/luciuschoi/tosspayments-rails"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.2"
@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Dependencies
-  spec.add_dependency "rails", "~> 7.0", ">= 7.0.0"
+  spec.add_dependency "rails", ">= 7.0.0"
   spec.add_dependency "faraday", "~> 2.0"
   spec.add_dependency "faraday-net_http", "~> 3.0"
 

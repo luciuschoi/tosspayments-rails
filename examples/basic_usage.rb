@@ -2,7 +2,8 @@
 
 # 토스페이먼츠 Rails gem 기본 사용 예제
 
-require "tosspayments/rails"
+# 로컬 개발 환경에서는 상대 경로로 로드
+require_relative "../lib/tosspayments/rails"
 
 # 1. 설정 예제
 Tosspayments::Rails.configure do |config|

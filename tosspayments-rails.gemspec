@@ -25,7 +25,8 @@ Gem::Specification.new do |spec|
   spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
     ls.readlines("\x0", chomp: true).reject do |f|
       (f == gemspec) ||
-        f.start_with?(*%w[bin/ Gemfile .gitignore])
+        f.start_with?(*%w[bin/ Gemfile .gitignore]) ||
+        f.end_with?(".gem")
     end
   end
   spec.bindir = "exe"
@@ -36,7 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rails", "~> 7.0", ">= 7.0.0"
   spec.add_dependency "faraday", "~> 2.0"
   spec.add_dependency "faraday-net_http", "~> 3.0"
-  spec.add_dependency "zeitwerk", "~> 2.6"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

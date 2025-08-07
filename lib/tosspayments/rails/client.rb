@@ -12,7 +12,7 @@ module Tosspayments
 
       def initialize(secret_key: nil)
         @secret_key = secret_key || Tosspayments::Rails.configuration.secret_key
-        raise ConfigurationError, "Secret key is required" if @secret_key.blank?
+        raise ConfigurationError, "Secret key is required" if @secret_key.nil? || @secret_key.empty?
       end
 
       # 결제 승인 API
@@ -106,7 +106,7 @@ module Tosspayments
         return unless payment_detail
         
         update_attributes = { status: status }
-        update_attributes.merge!(additional_data) if additional_data.present?
+        update_attributes.merge!(additional_data) if additional_data && !additional_data.empty?
         
         payment_detail.update!(update_attributes)
       rescue => e

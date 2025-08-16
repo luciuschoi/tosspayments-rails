@@ -80,8 +80,8 @@ GEM
       minitest (>= 5.1)
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
+    ansi (1.5.0)
     ast (2.4.3)
-    backport (1.2.0)
     base64 (0.3.0)
     benchmark (0.4.1)
     bigdecimal (3.2.2)
@@ -91,7 +91,6 @@ GEM
     connection_pool (2.5.3)
     crass (1.0.6)
     date (3.4.1)
-    diff-lcs (1.6.2)
     drb (2.2.3)
     erb (4.0.4)
       cgi (>= 0.3.3)
@@ -110,12 +109,7 @@ GEM
     irb (1.14.3)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    jaro_winkler (1.6.1)
     json (2.13.2)
-    kramdown (2.5.1)
-      rexml (>= 3.3.9)
-    kramdown-parser-gfm (1.1.0)
-      kramdown (~> 2.0)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -130,6 +124,11 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     minitest (5.25.5)
+    minitest-reporters (1.7.1)
+      ansi
+      builder
+      minitest (>= 5.0)
+      ruby-progressbar
     net-http (0.6.0)
       uri
     net-imap (0.5.9)
@@ -144,8 +143,6 @@ GEM
     nio4r (2.7.4)
     nokogiri (1.18.9-arm64-darwin)
       racc (~> 1.4)
-    observer (0.1.2)
-    ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.9.0)
       ast (~> 2.4.1)
@@ -202,9 +199,6 @@ GEM
     regexp_parser (2.11.2)
     reline (0.6.0)
       io-console (~> 0.5)
-    reverse_markdown (3.0.0)
-      nokogiri
-    rexml (3.4.1)
     rubocop (1.79.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -225,29 +219,8 @@ GEM
       rbs (>= 3, < 5)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
-    solargraph (0.56.0)
-      backport (~> 1.2)
-      benchmark (~> 0.4)
-      bundler (~> 2.0)
-      diff-lcs (~> 1.4)
-      jaro_winkler (~> 1.6, >= 1.6.1)
-      kramdown (~> 2.3)
-      kramdown-parser-gfm (~> 1.1)
-      logger (~> 1.6)
-      observer (~> 0.1)
-      ostruct (~> 0.6)
-      parser (~> 3.0)
-      prism (~> 1.4)
-      rbs (~> 3.3)
-      reverse_markdown (~> 3.0)
-      rubocop (~> 1.38)
-      thor (~> 1.0)
-      tilt (~> 2.0)
-      yard (~> 0.9, >= 0.9.24)
-      yard-solargraph (~> 0.1)
     stringio (3.1.2)
     thor (1.4.0)
-    tilt (2.6.1)
     timeout (0.4.3)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -260,9 +233,6 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    yard (0.9.37)
-    yard-solargraph (0.1.0)
-      yard (~> 0.9)
     zeitwerk (2.6.18)
 
 PLATFORMS
@@ -271,11 +241,12 @@ PLATFORMS
 
 DEPENDENCIES
   irb
+  minitest (~> 5.22)
+  minitest-reporters
   prism (~> 1.4)
   rake (~> 13.0)
   rubocop
   ruby-lsp
-  solargraph
   tosspayments-rails!
 
 BUNDLED WITH

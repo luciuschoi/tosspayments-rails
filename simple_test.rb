@@ -1,45 +1,16 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# 의존성 없는 기본 모듈 테스트
+# 젬 라이브러리 로드
+require_relative 'lib/tosspayments-rails'
 
 puts "🚀 토스페이먼츠 Rails gem 간단 테스트"
 puts "Ruby 버전: #{RUBY_VERSION}"
 
 # 1. 기본 모듈 정의 테스트
-module Tosspayments
-  module Rails
-    VERSION = "0.1.0"
-    
-    class Error < StandardError; end
-    class ConfigurationError < Error; end
-    class PaymentError < Error; end
-
-    class Configuration
-      attr_accessor :client_key, :secret_key, :sandbox
-
-      def initialize
-        @sandbox = true
-      end
-
-      def base_url
-        sandbox ? "https://api.tosspayments.com" : "https://api.tosspayments.com"
-      end
-    end
-
-    def self.configuration
-      @configuration ||= Configuration.new
-    end
-
-    def self.configure
-      yield(configuration)
-    end
-  end
-end
-
 puts "\n1. 기본 모듈 테스트"
 puts "✅ Tosspayments::Rails 모듈 정의됨" if defined?(Tosspayments::Rails)
-puts "✅ VERSION = #{Tosspayments::Rails::VERSION}"
+puts "✅ VERSION = #{Tosspayments::Rails::VERSION}" if defined?(Tosspayments::Rails::VERSION)
 puts "✅ Configuration 클래스 정의됨" if defined?(Tosspayments::Rails::Configuration)
 
 puts "\n2. 설정 테스트"

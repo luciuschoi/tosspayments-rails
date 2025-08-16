@@ -1,0 +1,16 @@
+current directory: /Users/lucius/Projects/myRails/myGems/tosspayments-rails/vendor/bundle/ruby/3.1.0/gems/debug-1.11.0/ext/debug
+/Users/lucius/.rbenv/versions/3.1.2/bin/ruby -I /Users/lucius/.rbenv/versions/3.1.2/lib/ruby/3.1.0 -r ./siteconf20250817-39699-a7fr2b.rb extconf.rb
+creating Makefile
+
+current directory: /Users/lucius/Projects/myRails/myGems/tosspayments-rails/vendor/bundle/ruby/3.1.0/gems/debug-1.11.0/ext/debug
+make DESTDIR\= clean
+
+current directory: /Users/lucius/Projects/myRails/myGems/tosspayments-rails/vendor/bundle/ruby/3.1.0/gems/debug-1.11.0/ext/debug
+make DESTDIR\=
+compiling debug.c
+compiling iseq_collector.c
+linking shared-object debug/debug.bundle
+
+current directory: /Users/lucius/Projects/myRails/myGems/tosspayments-rails/vendor/bundle/ruby/3.1.0/gems/debug-1.11.0/ext/debug
+make DESTDIR\= install
+/usr/bin/install -c -m 0755 debug.bundle ./.gem.20250817-39699-hdewcw/debug

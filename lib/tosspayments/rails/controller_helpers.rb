@@ -6,13 +6,26 @@ module Tosspayments
       extend ActiveSupport::Concern
 
       included do
-        before_action :verify_tosspayments_webhook, only: [:tosspayments_webhook] if respond_to?(:before_action)
+        # Rails 7.1에서 존재하지 않는 액션을 only로 지정하면 예외가 발생하므로
+        # 템플릿 컨트롤러의 액션명(:webhook)에 맞춰 설정합니다.
+        before_action :verify_tosspayments_webhook, only: [:webhook] if respond_to?(:before_action)
       end
 
       private
 
       def tosspayments_client
         @tosspayments_client ||= Tosspayments::Rails::Client.new
+      end
+
+      # before_action에서 호출될 실제 콜백 메서드
+      def verify_tosspayments_webhook
+        # 실제 서명 검증 로직으로 대체 가능
+        # verifier = Tosspayments::Rails::WebhookVerifier.new
+        # ok = verifier.verify_signature(request.raw_post, request.headers['X-TossPayments-Signature'])
+        ok = verify_tosspayments_webhook?
+        return true if ok
+
+        head :unauthorized
       end
 
       def verify_tosspayments_webhook?

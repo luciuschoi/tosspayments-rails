@@ -19,7 +19,7 @@
 Gemfile에 다음을 추가하세요:
 
 ```ruby
-gem 'tosspayments-rails', github: 'luciuschoi/tosspayments-rails'
+gem 'tosspayments-rails', git: "git@github.com:luciuschoi/tosspayments-rails.git"
 ```
 
 그리고 bundle install을 실행하세요:

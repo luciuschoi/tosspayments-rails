@@ -26,7 +26,11 @@ module Tosspayments
     end
 
     def create_migration
-      migration_template 'create_payments.rb', 'create_payments.rb'
+      if Rails.version.start_with?('8.')
+        migration_template 'create_payments.rb'
+      else
+        migration_template 'create_payments.rb', 'create_payments.rb'
+      end
     end
 
     def create_controller

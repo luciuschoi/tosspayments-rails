@@ -316,6 +316,29 @@ bundle exec ruby examples/basic_usage.rb
 
 주의: 실제 서비스 키를 평문으로 노출하지 마세요. 테스트 키는 토스페이먼츠 개발자센터에서 발급받아 사용하세요.
 
+
+## Unknown action in Web Browser
+
+```
+The webhook action could not be found for the :verify_tosspayments_webhook
+callback on PostsController, but it is listed in the controller's
+:only option.
+Raising for missing callback actions is a new default in Rails 7.1, if you'd
+like to turn this off you can delete the option from the environment configurations
+or set `config.action_controller.raise_on_missing_callback_actions` to `false`.
+```
+루트 컨트롤러 상단에 아래와 같이 skip_before_action 매크로를 추가한다. 
+
+```ruby
+class PostsController < ApplicationController
+  skip_before_action :verify_tosspayments_webhook, rescue: false
+
+  def index
+  end
+end
+```
+
+
 ## 개발
 
 저장소를 체크아웃한 후 `bin/setup`을 실행하여 의존성을 설치하세요. `bin/console`로 대화형 프롬프트를 실행할 수 있습니다.

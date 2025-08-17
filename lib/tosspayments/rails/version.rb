@@ -2,6 +2,6 @@
 
 module Tosspayments
   module Rails
-    VERSION = '0.1.4' # Rails 8 지원 범위 확장
+    VERSION = '0.1.6' # Generator alias path added for wider Rails lookup compatibility
   end
 end

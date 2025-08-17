@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-if defined?(Rails)
-  require 'rails/generators'
+require 'rails/generators'
 
-  module Tosspayments
-    class InstallGenerator < ::Rails::Generators::Base
+module Tosspayments
+  class InstallGenerator < ::Rails::Generators::Base
       # install 전용 템플릿 디렉터리
       source_root File.expand_path('templates', __dir__)
 
@@ -188,6 +187,5 @@ if defined?(Rails)
       def secret_key_placeholder
         'test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R'
       end
-    end
   end
 end

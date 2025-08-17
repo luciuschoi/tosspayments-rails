@@ -17,6 +17,10 @@ module Tosspayments
       template 'initializer.rb', 'config/initializers/tosspayments.rb'
     end
 
+    def create_migration
+      migration_template 'create_payments.rb', 'db/migrate/create_payments.rb'
+    end
+
     def create_controller
       template 'payments_controller.rb', 'app/controllers/payments_controller.rb'
     end
@@ -190,6 +194,20 @@ module Tosspayments
     end
 
     private
+
+    def migration_version
+      if Rails.version.start_with?('5.')
+        '[5.0]'
+      elsif Rails.version.start_with?('6.')
+        '[6.0]'
+      elsif Rails.version.start_with?('7.')
+        '[7.0]'
+      elsif Rails.version.start_with?('8.')
+        '[8.0]'
+      else
+        ''
+      end
+    end
 
     def client_key_placeholder
       'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'

@@ -285,6 +285,37 @@ payment_detail.cancel_info              # 취소 정보
 http://localhost:3000/payments/new
 ```
 
+## 예제 실행
+
+샘플 스크립트로 gem 로드와 기본 동작을 확인할 수 있습니다. 모든 실행은 Bundler 컨텍스트에서 권장합니다.
+
+- 기본 실행 (비밀키 없이도 동작, 초기화는 건너뜀):
+
+```
+bundle exec ruby examples/basic_usage.rb
+```
+
+- 비밀키 설정 후 클라이언트 초기화까지 확인:
+
+```
+export TOSSPAY_SECRET_KEY={{TOSSPAY_TEST_SECRET_KEY}}
+bundle exec ruby examples/basic_usage.rb
+```
+
+- 선택적으로 API 호출 테스트까지 시도 (유효한 키가 없으면 실패가 정상):
+
+```
+export TOSSPAY_SECRET_KEY={{TOSSPAY_TEST_SECRET_KEY}}
+export RUN_API=1
+export DUMMY_PAYMENT_KEY={{DUMMY_PAYMENT_KEY}}
+# 필요 시 클라이언트 키/샌드박스도 지정 가능
+# export TOSSPAY_CLIENT_KEY={{TOSSPAY_TEST_CLIENT_KEY}}
+# export TOSSPAY_SANDBOX=true
+bundle exec ruby examples/basic_usage.rb
+```
+
+주의: 실제 서비스 키를 평문으로 노출하지 마세요. 테스트 키는 토스페이먼츠 개발자센터에서 발급받아 사용하세요.
+
 ## 개발
 
 저장소를 체크아웃한 후 `bin/setup`을 실행하여 의존성을 설치하세요. `bin/console`로 대화형 프롬프트를 실행할 수 있습니다.

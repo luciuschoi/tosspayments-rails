@@ -1,0 +1,87 @@
+/* 토스페이먼츠 결제 페이지 전용 스타일 */
+
+.payment-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.payment-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #191919;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.tosspayments-payment-wrapper {
+  border: 1px solid #e5e8eb;
+  border-radius: 8px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.tosspayments-payment-button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #3282f6;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color .15s ease-in-out;
+}
+
+.tosspayments-payment-button:hover {
+  background-color: #1b64da !important;
+}
+
+.tosspayments-payment-button:active {
+  background-color: #0b4cc4 !important;
+}
+
+.tosspayments-loading, .tosspayments-payment-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.order-summary {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.order-summary h3 {
+  margin: 0 0 15px 0;
+  color: #191919;
+}
+
+.order-summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.order-summary-total {
+  font-weight: 700;
+  color: #3282f6;
+}
+
+/* Dark mode (선택적) */
+@media (prefers-color-scheme: dark) {
+  .payment-title { color: #fafafa; }
+  .tosspayments-payment-wrapper { background:#1f1f1f; border-color:#323232; }
+  .order-summary { background:#262626; }
+  .order-summary h3 { color:#fafafa; }
+  .tosspayments-payment-button { background-color:#2d6fe0; }
+  .tosspayments-payment-button:hover { background-color:#1f57b8 !important; }
+  .tosspayments-payment-button:active { background-color:#16448e !important; }
+}
+
+/* Utility */
+.text-center { text-align: center; }
+
+/* 필요시 사용자 앱에서 override 가능 */

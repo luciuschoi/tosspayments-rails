@@ -8,6 +8,10 @@ if defined?(Rails)
       # install 전용 템플릿 디렉터리
       source_root File.expand_path('templates', __dir__)
 
+      # 옵션 추가
+      class_option :skip_assets, type: :boolean, default: false, desc: '스타일시트(tosspayments.css) 및 자동 등록을 건너뜁니다.'
+      class_option :skip_stimulus, type: :boolean, default: false, desc: 'Stimulus 컨트롤러 파일 및 자동 등록을 건너뜁니다.'
+
       desc '토스페이먼츠 Rails gem을 설치하고 기본 설정을 생성합니다.'
 
       def create_initializer
@@ -23,6 +27,137 @@ if defined?(Rails)
         %w[new success fail].each do |view|
           template "#{view}.html.erb", "app/views/payments/#{view}.html.erb"
         end
+      end
+
+      def create_stimulus_controller
+        return if options[:skip_stimulus]
+        empty_directory 'app/javascript/controllers'
+        template 'tosspayments_controller.js', 'app/javascript/controllers/tosspayments_controller.js'
+
+        say '[tosspayments] Stimulus controller 추가: app/javascript/controllers/tosspayments_controller.js', :green
+        say "controllers/index.js 에 'application.register(\"tosspayments\", TosspaymentsController)' 를 추가했는지 확인하세요.", :yellow
+      rescue StandardError => e
+        say "Stimulus controller 생성 중 오류: #{e.message}", :red
+      end
+
+      def create_stylesheet
+        return if options[:skip_assets]
+        empty_directory 'app/assets/stylesheets'
+        copy_file 'tosspayments.css', 'app/assets/stylesheets/tosspayments.css'
+        say '[tosspayments] Stylesheet 추가: app/assets/stylesheets/tosspayments.css', :green
+        say 'application.css (또는 application.(scss|sass)) 에서 require 또는 @import 하세요.', :yellow
+      rescue StandardError => e
+        say "Stylesheet 생성 중 오류: #{e.message}", :red
+      end
+
+      # Stimulus index 파일에 tosspayments 컨트롤러 등록 (필요 시)
+      def register_stimulus
+        return if options[:skip_stimulus]
+        index_path = 'app/javascript/controllers/index.js'
+        controller_import = 'import TosspaymentsController from "./tosspayments_controller"'
+        register_line = 'application.register("tosspayments", TosspaymentsController)'
+
+        return unless File.exist?(index_path)
+
+        content = File.read(index_path)
+
+        # eagerLoadControllersFrom 사용 시 _controller.js 네이밍으로 자동로드되므로 안내만 출력
+        if content.include?('eagerLoadControllersFrom(')
+          say '[tosspayments] Stimulus: eagerLoadControllersFrom 감지되어 자동 로드됩니다.', :blue
+          return
+        end
+
+        # 이미 등록된 경우 (application.register("tosspayments", ...)) import 누락만 추가
+        if content.match(/application\.register\(\s*"tosspayments"/)
+          unless content.include?(controller_import)
+            content = "#{controller_import}\n#{content}"
+            File.write(index_path, content)
+            say '[tosspayments] 기존 등록 발견 – import 추가 완료', :green
+          else
+            say '[tosspayments] Stimulus index.js 이미 tosspayments 등록됨', :blue
+          end
+          return
+        end
+
+        changed = false
+        unless content.include?(controller_import)
+          content = "#{controller_import}\n#{content}"
+          changed = true
+        end
+        unless content.include?(register_line)
+          content << "\n#{register_line}\n"
+          changed = true
+        end
+
+        if changed
+          File.write(index_path, content)
+          say '[tosspayments] Stimulus index.js 에 tosspayments 컨트롤러 등록 완료', :green
+        else
+          say '[tosspayments] Stimulus index.js 이미 등록됨', :blue
+        end
+      rescue StandardError => e
+        say "Stimulus 등록 중 오류: #{e.message}", :red
+      end
+
+      # application stylesheet 에 tosspayments.css 포함 시도 (idempotent)
+      def register_stylesheet
+        return if options[:skip_assets]
+        candidates = %w[
+          app/assets/stylesheets/application.scss
+          app/assets/stylesheets/application.sass
+          app/assets/stylesheets/application.css
+        ]
+
+        target = candidates.find { |p| File.exist?(p) }
+        unless target
+          say '[tosspayments] application.(s)css 파일을 찾지 못해 자동 등록을 건너뜁니다.', :yellow
+          return
+        end
+
+        content = File.read(target)
+
+        if target.end_with?('.scss', '.sass')
+          if content.include?('@import "tosspayments"') || content.include?('@use "tosspayments"')
+            say '[tosspayments] Stylesheet 이미 import 됨', :blue
+            return
+          end
+          File.open(target, 'a') { |f| f.puts '\n@import "tosspayments";\n' }
+          say "[tosspayments] #{File.basename(target)} 에 @import 추가", :green
+        else
+          # .css (Sprockets manifest) – require 구문 또는 require_tree 검사
+          if content =~ /require_tree/ || content.include?('require_self')
+            say '[tosspayments] require_tree 사용중 - tosspayments.css 자동 포함 예상', :blue
+            return
+          end
+          if content.include?('require tosspayments')
+            say '[tosspayments] Stylesheet 이미 require 됨', :blue
+            return
+          end
+
+          # /* ... */ 블록 안에 삽입 시도
+          if content =~ /\/\*.*\*\/\s*$/m
+            new_content = content.sub(/(\/\*[^*]*\*+(?:[^/*][^*]*\*+)*)(\*\/)/m) do |m|
+              header = Regexp.last_match(1)
+              closing = Regexp.last_match(2)
+              if header.include?('require tosspayments')
+                m
+              else
+                "#{header}\n *= require tosspayments\n#{closing}"
+              end
+            end
+            unless new_content == content
+              File.write(target, new_content)
+              say "[tosspayments] #{File.basename(target)} manifest 에 require 추가", :green
+              return
+            end
+          end
+
+          # Fallback append
+            File.open(target, 'a') { |f| f.puts '\n/*= require tosspayments */\n' }
+          say "[tosspayments] #{File.basename(target)} 끝에 require 추가", :green
+        end
+      rescue StandardError => e
+        say "Stylesheet 자동 등록 중 오류: #{e.message}", :red
       end
 
       def add_routes

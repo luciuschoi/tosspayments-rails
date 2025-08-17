@@ -15,7 +15,7 @@ module Tosspayments
         @tosspayments_client ||= Tosspayments::Rails::Client.new
       end
 
-      def verify_tosspayments_webhook
+      def verify_tosspayments_webhook?
         # 토스페이먼츠 웹훅 검증 로직
         # 실제 구현시에는 토스페이먼츠에서 제공하는 서명 검증을 구현해야 합니다
         true

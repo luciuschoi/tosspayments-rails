@@ -37,7 +37,8 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   # Dependencies
   spec.add_dependency 'faraday', '~> 2.0'
   spec.add_dependency 'faraday-net_http', '~> 3.0'
-  spec.add_dependency 'rails', '>= 7.0.0'
+  # Rails 7.x 및 8.x 지원 (9.0 미만)
+  spec.add_dependency 'rails', '>= 7.0', '< 9.0'
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

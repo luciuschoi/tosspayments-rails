@@ -5,7 +5,7 @@
 ## 주요 기능
 
 - 토스페이먼츠 결제위젯 연동
-- Rails 7+ 완전 호환 (Ruby 3.1.2+ 지원)
+- Rails 7.x / 8.x 완전 호환 (Ruby 3.1.2+ 지원)
 - Rails credentials를 통한 안전한 키 관리
 - 컨트롤러 및 뷰 헬퍼 제공
 - 결제 승인, 취소, 조회 API 지원
@@ -19,7 +19,7 @@
 Gemfile에 다음을 추가하세요:
 
 ```ruby
-gem 'tosspayments-rails'
+gem 'tosspayments-rails', github: 'luciuschoi/tosspayments-rails'
 ```
 
 그리고 bundle install을 실행하세요:

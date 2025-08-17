@@ -1,0 +1,123 @@
+===============================================================================
+
+토스페이먼츠 결제 상세 정보 저장 기능이 성공적으로 설치되었습니다!
+
+이제 결제가 완료될 때마다 상세한 결제 정보가 자동으로 데이터베이스에 저장됩니다.
+
+## 생성된 파일들
+
+- `db/migrate/create_payment_details.rb` - PaymentDetail 테이블 마이그레이션
+- `app/models/payment_detail.rb` - PaymentDetail 모델
+- `app/controllers/payment_details_controller.rb` - PaymentDetails 컨트롤러
+- `app/views/payment_details/index.html.erb` - 결제 내역 목록 페이지
+- `app/views/payment_details/show.html.erb` - 결제 상세 정보 페이지
+- `config/routes.rb` - 라우트 추가됨
+
+## 다음 단계
+
+### 1. 데이터베이스 마이그레이션 실행
+
+```bash
+rails db:migrate
+```
+
+### 2. 결제 내역 확인
+
+결제 내역을 확인하려면 다음 URL에 접속하세요:
+
+```
+http://localhost:3000/payment_details
+```
+
+### 3. 결제 통계 확인
+
+결제 통계를 확인하려면 다음 URL에 접속하세요:
+
+```
+http://localhost:3000/payment_details/statistics
+```
+
+## 주요 기능
+
+### 자동 저장
+- 결제 승인 시 자동으로 PaymentDetail 레코드 생성
+- 결제 취소 시 상태 자동 업데이트
+- 웹훅을 통한 실시간 상태 동기화
+
+### 상세 정보 저장
+- 결제 방법별 상세 정보 (카드, 계좌이체, 가상계좌 등)
+- 취소 정보 및 사유
+- 영수증 URL
+- 세금 정보 (부가세, 면세 등)
+
+### 검색 및 필터링
+- 결제 상태별 필터링
+- 결제 방법별 필터링
+- 날짜 범위 검색
+- 페이지네이션 지원
+
+### 통계 기능
+- 총 결제 건수 및 금액
+- 성공/실패/대기 건수
+- 결제 방법별 통계
+- 평균 결제 금액
+
+## 사용 예제
+
+### 결제 상세 정보 조회
+```ruby
+payment_detail = PaymentDetail.find_by(payment_key: "payment_key")
+```
+
+### 결제 통계 조회
+```ruby
+statistics = PaymentDetail.statistics(
+  start_date: 1.month.ago,
+  end_date: Date.current
+)
+```
+
+### 결제 방법별 필터링
+```ruby
+card_payments = PaymentDetail.by_method('card').successful
+```
+
+### 상태별 필터링
+```ruby
+pending_payments = PaymentDetail.by_status('pending')
+```
+
+## API 응답 예제
+
+결제가 완료되면 다음과 같은 정보가 저장됩니다:
+
+```json
+{
+  "payment_key": "5zJ4xY7m0k2nyZQ",
+  "order_id": "ORDER_20231201_001",
+  "order_name": "토스 티셔츠 외 2건",
+  "method": "card",
+  "status": "done",
+  "total_amount": 15000,
+  "balance_amount": 0,
+  "supplied_amount": 13636,
+  "vat": 1364,
+  "currency": "KRW",
+  "card": {
+    "company": "신한",
+    "number": "1234567890123456",
+    "installment_plan_months": 0,
+    "is_interest_free": false,
+    "approve_no": "00000000",
+    "use_card_point": false,
+    "card_type": "신용",
+    "owner_type": "개인",
+    "acquire_status": "APPROVED",
+    "amount": 15000
+  },
+  "receipt_url": "https://dashboard.tosspayments.com/receipt/...",
+  "approved_at": "2023-12-01T10:30:00+09:00"
+}
+```
+
+=============================================================================== 

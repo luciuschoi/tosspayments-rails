@@ -1,253 +1,157 @@
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>결제 상세 정보</h2>
-    <div>
-      <%%= link_to "목록으로", payment_details_path, class: "btn btn-outline-secondary" %>
-    </div>
+<%# 결제 상세 정보 페이지 %>
+<div class="container mx-auto p-6">
+  <div class="mb-6">
+    <%= link_to "← 결제 내역으로", payment_details_path, 
+        class: "text-blue-600 hover:text-blue-800" %>
   </div>
 
-  <div class="row">
-    <div class="col-lg-8">
-      <!-- 결제 기본 정보 -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">기본 정보</h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <dl class="row">
-                <dt class="col-sm-4">결제 키</dt>
-                <dd class="col-sm-8">
-                  <code><%%= @payment_detail.payment_key %></code>
-                </dd>
-                
-                <dt class="col-sm-4">주문 ID</dt>
-                <dd class="col-sm-8"><%%= @payment_detail.order_id %></dd>
-                
-                <dt class="col-sm-4">주문명</dt>
-                <dd class="col-sm-8">
-                  <%%= @payment_detail.order_name.present? ? @payment_detail.order_name : "-" %>
-                </dd>
-              </dl>
-            </div>
-            <div class="col-md-6">
-              <dl class="row">
-                <dt class="col-sm-4">결제 상태</dt>
-                <dd class="col-sm-8">
-                  <%% case @payment_detail.status %>
-                  <%% when 'DONE' %>
-                    <span class="badge bg-success fs-6">완료</span>
-                  <%% when 'CANCELED' %>
-                    <span class="badge bg-danger fs-6">취소</span>
-                  <%% when 'PARTIAL_CANCELED' %>
-                    <span class="badge bg-warning fs-6">부분취소</span>
-                  <%% when 'ABORTED' %>
-                    <span class="badge bg-secondary fs-6">중단</span>
-                  <%% when 'EXPIRED' %>
-                    <span class="badge bg-dark fs-6">만료</span>
-                  <%% else %>
-                    <span class="badge bg-primary fs-6"><%%= @payment_detail.status %></span>
-                  <%% end %>
-                </dd>
-                
-                <dt class="col-sm-4">결제 방법</dt>
-                <dd class="col-sm-8">
-                  <%%= @payment_detail.method.present? ? @payment_detail.method : "-" %>
-                </dd>
-                
-                <dt class="col-sm-4">타입</dt>
-                <dd class="col-sm-8">
-                  <%%= @payment_detail.type.present? ? @payment_detail.type : "-" %>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 금액 정보 -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">금액 정보</h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <dl class="row">
-                <dt class="col-sm-6">총 결제 금액</dt>
-                <dd class="col-sm-6">
-                  <strong class="text-primary fs-5">
-                    <%%= number_to_currency(@payment_detail.total_amount, unit: "₩", format: "%%u %%n") %>
-                  </strong>
-                </dd>
-                
-                <dt class="col-sm-6">공급가액</dt>
-                <dd class="col-sm-6">
-                  <%%= @payment_detail.supplied_amount.present? ? 
-                      number_to_currency(@payment_detail.supplied_amount, unit: "₩", format: "%%u %%n") : "-" %>
-                </dd>
-                
-                <dt class="col-sm-6">부가세</dt>
-                <dd class="col-sm-6">
-                  <%%= @payment_detail.vat.present? ? 
-                      number_to_currency(@payment_detail.vat, unit: "₩", format: "%%u %%n") : "-" %>
-                </dd>
-              </dl>
-            </div>
-            <div class="col-md-6">
-              <dl class="row">
-                <dt class="col-sm-6">취소 가능 금액</dt>
-                <dd class="col-sm-6">
-                  <%%= @payment_detail.balance_amount.present? ? 
-                      number_to_currency(@payment_detail.balance_amount, unit: "₩", format: "%%u %%n") : "-" %>
-                </dd>
-                
-                <dt class="col-sm-6">통화</dt>
-                <dd class="col-sm-6">
-                  <%%= @payment_detail.currency.present? ? @payment_detail.currency : "KRW" %>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 결제 세부사항 -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">결제 세부사항</h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <dl class="row">
-                <dt class="col-sm-4">요청 일시</dt>
-                <dd class="col-sm-8">
-                  <%%= @payment_detail.requested_at.present? ? 
-                      @payment_detail.requested_at.strftime("%%Y-%%m-%%d %%H:%%M:%%S") : "-" %>
-                </dd>
-                
-                <dt class="col-sm-4">승인 일시</dt>
-                <dd class="col-sm-8">
-                  <%%= @payment_detail.approved_at.present? ? 
-                      @payment_detail.approved_at.strftime("%%Y-%%m-%%d %%H:%%M:%%S") : "-" %>
-                </dd>
-              </dl>
-            </div>
-            <div class="col-md-6">
-              <dl class="row">
-                <dt class="col-sm-4">사용 포인트</dt>
-                <dd class="col-sm-8">
-                  <%%= @payment_detail.use_escrow? ? "사용" : "미사용" %>
-                </dd>
-                
-                <dt class="col-sm-4">문화비 소득공제</dt>
-                <dd class="col-sm-8">
-                  <%%= @payment_detail.culture_expense? ? "적용" : "미적용" %>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        결제 상세 정보
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        결제키: <%= @payment_detail.payment_key %>
+      </p>
     </div>
+    
+    <div class="border-t border-gray-200">
+      <dl>
+        <%# 기본 정보 %>
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">주문명</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @payment_detail.order_name %>
+          </dd>
+        </div>
+        
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">주문번호</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @payment_detail.order_id %>
+          </dd>
+        </div>
+        
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">결제 상태</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+              <%= @payment_detail.successful? ? 'bg-green-100 text-green-800' : 
+                  @payment_detail.failed? ? 'bg-red-100 text-red-800' : 
+                  'bg-yellow-100 text-yellow-800' %>">
+              <%= @payment_detail.status_name %>
+            </span>
+          </dd>
+        </div>
+        
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">결제 방법</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @payment_detail.method_name %>
+          </dd>
+        </div>
+        
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">결제 금액</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <span class="text-lg font-semibold"><%= @payment_detail.formatted_total_amount %></span>
+          </dd>
+        </div>
+        
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">승인일시</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @payment_detail.approved_at&.strftime("%Y년 %m월 %d일 %H:%M:%S") %>
+          </dd>
+        </div>
 
-    <div class="col-lg-4">
-      <!-- 카드 정보 (해당하는 경우) -->
-      <%% if @payment_detail.method == 'CARD' && @payment_detail.card_data.present? %>
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">카드 정보</h5>
-          </div>
-          <div class="card-body">
-            <dl class="row">
-              <dt class="col-sm-5">카드 번호</dt>
-              <dd class="col-sm-7">
-                <code><%%= @payment_detail.card_data['number'] %></code>
-              </dd>
-              
-              <dt class="col-sm-5">카드사</dt>
-              <dd class="col-sm-7">
-                <%%= @payment_detail.card_data['company'] %>
-              </dd>
-              
-              <dt class="col-sm-5">카드 종류</dt>
-              <dd class="col-sm-7">
-                <%%= @payment_detail.card_data['type'] %>
-              </dd>
-              
-              <%% if @payment_detail.card_data['installment_plan_months'].present? %>
-                <dt class="col-sm-5">할부</dt>
-                <dd class="col-sm-7">
-                  <%%= @payment_detail.card_data['installment_plan_months'] %>개월
+        <%# 카드 정보 %>
+        <% if @payment_detail.card_info.present? %>
+          <div class="bg-gray-50 px-4 py-5 sm:px-6">
+            <h4 class="text-sm font-medium text-gray-500 mb-3">카드 정보</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <dt class="text-xs font-medium text-gray-500">카드사</dt>
+                <dd class="text-sm text-gray-900"><%= @payment_detail.card_info[:company] %></dd>
+              </div>
+              <div>
+                <dt class="text-xs font-medium text-gray-500">카드번호</dt>
+                <dd class="text-sm text-gray-900"><%= @payment_detail.card_info[:number] %></dd>
+              </div>
+              <div>
+                <dt class="text-xs font-medium text-gray-500">승인번호</dt>
+                <dd class="text-sm text-gray-900"><%= @payment_detail.card_info[:approve_no] %></dd>
+              </div>
+              <div>
+                <dt class="text-xs font-medium text-gray-500">할부개월</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= @payment_detail.card_info[:installment_plan_months] || '일시불' %>
                 </dd>
-              <%% end %>
-            </dl>
+              </div>
+            </div>
           </div>
-        </div>
-      <%% end %>
+        <% end %>
 
-      <!-- 가상계좌 정보 (해당하는 경우) -->
-      <%% if @payment_detail.method == 'VIRTUAL_ACCOUNT' && @payment_detail.virtual_account_data.present? %>
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">가상계좌 정보</h5>
+        <%# 가상계좌 정보 %>
+        <% if @payment_detail.virtual_account_info.present? %>
+          <div class="bg-white px-4 py-5 sm:px-6">
+            <h4 class="text-sm font-medium text-gray-500 mb-3">가상계좌 정보</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <dt class="text-xs font-medium text-gray-500">계좌번호</dt>
+                <dd class="text-sm text-gray-900"><%= @payment_detail.virtual_account_info[:account_number] %></dd>
+              </div>
+              <div>
+                <dt class="text-xs font-medium text-gray-500">입금기한</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= @payment_detail.virtual_account_info[:due_date]&.strftime("%Y년 %m월 %d일") %>
+                </dd>
+              </div>
+            </div>
           </div>
-          <div class="card-body">
-            <dl class="row">
-              <dt class="col-sm-4">은행</dt>
-              <dd class="col-sm-8">
-                <%%= @payment_detail.virtual_account_data['bank_name'] %>
-              </dd>
-              
-              <dt class="col-sm-4">계좌번호</dt>
-              <dd class="col-sm-8">
-                <code><%%= @payment_detail.virtual_account_data['account_number'] %></code>
-              </dd>
-              
-              <dt class="col-sm-4">예금주</dt>
-              <dd class="col-sm-8">
-                <%%= @payment_detail.virtual_account_data['customer_name'] %>
-              </dd>
-              
-              <dt class="col-sm-4">입금기한</dt>
-              <dd class="col-sm-8">
-                <%%= @payment_detail.virtual_account_data['due_date'] %>
-              </dd>
-            </dl>
-          </div>
-        </div>
-      <%% end %>
+        <% end %>
 
-      <!-- 실패 정보 (해당하는 경우) -->
-      <%% if @payment_detail.failure_code.present? || @payment_detail.failure_reason.present? %>
-        <div class="card border-danger mb-4">
-          <div class="card-header bg-danger text-white">
-            <h5 class="mb-0">실패 정보</h5>
+        <%# 취소 정보 %>
+        <% if @payment_detail.cancel_info.present? %>
+          <div class="bg-gray-50 px-4 py-5 sm:px-6">
+            <h4 class="text-sm font-medium text-gray-500 mb-3">취소 정보</h4>
+            <% @payment_detail.cancel_info.each do |cancel| %>
+              <div class="border-t border-gray-200 pt-3 mt-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <dt class="text-xs font-medium text-gray-500">취소 금액</dt>
+                    <dd class="text-sm text-gray-900">
+                      <%= number_to_currency(cancel[:cancel_amount], unit: '원', precision: 0) %>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs font-medium text-gray-500">취소 사유</dt>
+                    <dd class="text-sm text-gray-900"><%= cancel[:cancel_reason] %></dd>
+                  </div>
+                  <div>
+                    <dt class="text-xs font-medium text-gray-500">취소일시</dt>
+                    <dd class="text-sm text-gray-900">
+                      <%= cancel[:canceled_at]&.strftime("%Y년 %m월 %d일 %H:%M") %>
+                    </dd>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           </div>
-          <div class="card-body">
-            <%% if @payment_detail.failure_code.present? %>
-              <p><strong>실패 코드:</strong> <%%= @payment_detail.failure_code %></p>
-            <%% end %>
-            <%% if @payment_detail.failure_reason.present? %>
-              <p><strong>실패 사유:</strong> <%%= @payment_detail.failure_reason %></p>
-            <%% end %>
-          </div>
-        </div>
-      <%% end %>
+        <% end %>
 
-      <!-- JSON 데이터 (개발용) -->
-      <%% if Rails.env.development? && @payment_detail.raw_data.present? %>
-        <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">Raw JSON Data</h5>
+        <%# 영수증 링크 %>
+        <% if @payment_detail.receipt_url.present? %>
+          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">영수증</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= link_to "영수증 보기", @payment_detail.receipt_url, 
+                  target: "_blank", 
+                  class: "text-blue-600 hover:text-blue-800 underline" %>
+            </dd>
           </div>
-          <div class="card-body">
-            <pre class="bg-light p-3 small" style="max-height: 300px; overflow-y: auto;"><%%= JSON.pretty_generate(@payment_detail.raw_data) %></pre>
-          </div>
-        </div>
-      <%% end %>
+        <% end %>
+      </dl>
     </div>
   </div>
-</div>
+</div> 

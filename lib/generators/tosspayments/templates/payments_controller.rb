@@ -6,8 +6,8 @@ class PaymentsController < ApplicationController
   # 결제 페이지
   def new
     @order_id = "ORDER_#{Time.current.to_i}_#{SecureRandom.hex(4)}"
-    @amount = params[:amount] || 15000
-    @order_name = params[:order_name] || "토스 티셔츠 외 2건"
+    @amount = params[:amount] || 15_000
+    @order_name = params[:order_name] || '토스 티셔츠 외 2건'
     @customer_key = current_user&.id || "GUEST_#{SecureRandom.hex(8)}"
   end
 
@@ -23,7 +23,7 @@ class PaymentsController < ApplicationController
       amount: amount
     )
 
-    if result[:success] != false
+    if result[:success]
       redirect_to success_payments_path(paymentKey: payment_key)
     else
       redirect_to fail_payments_path(message: result[:error])
@@ -44,19 +44,17 @@ class PaymentsController < ApplicationController
 
   # 웹훅 처리 (토스페이먼츠에서 결제 상태 변경시 호출)
   def webhook
-    payment_key = params[:data][:paymentKey]
-    
+    data = params[:data] || {}
+    payment_key = data[:paymentKey] || data['paymentKey']
+    return head :bad_request unless payment_key
+
     # 결제 정보 조회
     payment = get_tosspayments_payment(payment_key)
-    
-    if payment[:success] != false
-      # 결제 상태에 따른 비즈니스 로직 처리
+    if payment[:success]
       case payment[:status]
-      when "DONE"
-        # 결제 완료 처리
+      when 'DONE'
         Rails.logger.info "결제 완료: #{payment_key}"
-      when "CANCELED"
-        # 결제 취소 처리
+      when 'CANCELED'
         Rails.logger.info "결제 취소: #{payment_key}"
       end
     end

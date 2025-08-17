@@ -1,0 +1,30 @@
+===============================================================================
+
+PaymentDetail 기능 생성 완료
+=============================
+
+생성된 리소스:
+- db/migrate/create_payment_details.rb
+- app/models/payment_detail.rb
+- app/controllers/payment_details_controller.rb
+- app/views/payment_details/index.html.erb
+- app/views/payment_details/show.html.erb
+<% if options[:statistics] %>- routes: payment_details + statistics (collection)
+<% else %>- routes: payment_details (index/show)
+<% end %>
+
+다음 단계:
+1) DB 마이그레이션 실행:  rails db:migrate
+2) 목록:     http://localhost:3000/payment_details
+3) 통계(옵션): http://localhost:3000/payment_details/statistics
+
+주요 쿼리 예시:
+  PaymentDetail.by_status('done').recent
+  PaymentDetail.statistics(start_date: 1.month.ago, end_date: Date.current)
+
+컬럼(method/type) 네이밍 변경 예정 안내:
+- 차기 버전에서 method -> payment_method, type -> payment_type (STI 충돌 방지)로 마이그레이션 예고
+
+문서: https://github.com/luciuschoi/tosspayments-rails
+
+===============================================================================

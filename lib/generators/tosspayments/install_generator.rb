@@ -1,27 +1,28 @@
 # frozen_string_literal: true
 
 if defined?(Rails)
-  require "rails/generators"
+  require 'rails/generators'
 
   module Tosspayments
     class InstallGenerator < ::Rails::Generators::Base
-      source_root File.expand_path("templates", __dir__)
-      
-      desc "토스페이먼츠 Rails gem을 설치하고 기본 설정을 생성합니다."
+      # install 전용 템플릿 디렉터리
+      source_root File.expand_path('templates', __dir__)
+
+      desc '토스페이먼츠 Rails gem을 설치하고 기본 설정을 생성합니다.'
 
       def create_initializer
-        template "initializer.rb", "config/initializers/tosspayments.rb"
+        template 'initializer.rb', 'config/initializers/tosspayments.rb'
       end
 
       def create_controller
-        template "payments_controller.rb", "app/controllers/payments_controller.rb"
+        template 'payments_controller.rb', 'app/controllers/payments_controller.rb'
       end
 
       def create_views
-        empty_directory "app/views/payments"
-        template "new.html.erb", "app/views/payments/new.html.erb"
-        template "success.html.erb", "app/views/payments/success.html.erb"
-        template "fail.html.erb", "app/views/payments/fail.html.erb"
+        empty_directory 'app/views/payments'
+        %w[new success fail].each do |view|
+          template "#{view}.html.erb", "app/views/payments/#{view}.html.erb"
+        end
       end
 
       def add_routes
@@ -38,17 +39,19 @@ if defined?(Rails)
       end
 
       def show_readme
-        readme "README" if behavior == :invoke
+        readme 'README' if behavior == :invoke
+      rescue StandardError
+        # README 템플릿 미존재시 조용히 무시
       end
 
       private
 
       def client_key_placeholder
-        "test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq"
+        'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'
       end
 
-      def secret_key_placeholder  
-        "test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R"
+      def secret_key_placeholder
+        'test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R'
       end
     end
   end

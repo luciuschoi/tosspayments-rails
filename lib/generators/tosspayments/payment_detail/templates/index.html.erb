@@ -1,92 +1,117 @@
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>결제 상세 정보</h2>
-    <div>
-      <%%= link_to "새로고침", payment_details_path, class: "btn btn-outline-primary" %>
-    </div>
+<%# 결제 상세 정보 목록 페이지 %>
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">결제 내역</h1>
+    <%= link_to "통계 보기", statistics_payment_details_path, 
+        class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
   </div>
 
-  <%% if @payment_details.any? %>
-    <div class="card">
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>결제 키</th>
-                <th>주문 ID</th>
-                <th>금액</th>
-                <th>상태</th>
-                <th>결제 방법</th>
-                <th>승인일시</th>
-                <th>액션</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%% @payment_details.each do |payment_detail| %>
-                <tr>
-                  <td>
-                    <code><%%= payment_detail.payment_key %></code>
-                  </td>
-                  <td><%%= payment_detail.order_id %></td>
-                  <td>
-                    <strong><%%= number_to_currency(payment_detail.total_amount, unit: "₩", format: "%%u %%n") %></strong>
-                  </td>
-                  <td>
-                    <%% case payment_detail.status %>
-                    <%% when 'DONE' %>
-                      <span class="badge bg-success">완료</span>
-                    <%% when 'CANCELED' %>
-                      <span class="badge bg-danger">취소</span>
-                    <%% when 'PARTIAL_CANCELED' %>
-                      <span class="badge bg-warning">부분취소</span>
-                    <%% when 'ABORTED' %>
-                      <span class="badge bg-secondary">중단</span>
-                    <%% when 'EXPIRED' %>
-                      <span class="badge bg-dark">만료</span>
-                    <%% else %>
-                      <span class="badge bg-primary"><%%= payment_detail.status %></span>
-                    <%% end %>
-                  </td>
-                  <td>
-                    <%% if payment_detail.method.present? %>
-                      <%%= payment_detail.method %>
-                    <%% else %>
-                      -
-                    <%% end %>
-                  </td>
-                  <td>
-                    <%% if payment_detail.approved_at.present? %>
-                      <%%= payment_detail.approved_at.strftime("%%Y-%%m-%%d %%H:%%M") %>
-                    <%% else %>
-                      -
-                    <%% end %>
-                  </td>
-                  <td>
-                    <%%= link_to "상세보기", payment_detail_path(payment_detail), class: "btn btn-sm btn-outline-primary" %>
-                  </td>
-                </tr>
-              <%% end %>
-            </tbody>
-          </table>
-        </div>
+  <%# 필터 폼 %>
+  <div class="bg-gray-50 p-4 rounded-lg mb-6">
+    <%= form_with url: payment_details_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-4 gap-4" do |form| %>
+      <div>
+        <%= form.label :status, "결제 상태", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.select :status, 
+            options_for_select([
+              ['전체', ''],
+              ['결제 완료', 'done'],
+              ['결제 취소', 'canceled'],
+              ['결제 실패', 'failed'],
+              ['결제 대기', 'ready']
+            ], params[:status]), 
+            {}, 
+            class: "w-full border border-gray-300 rounded-md px-3 py-2" %>
       </div>
-    </div>
+      
+      <div>
+        <%= form.label :method, "결제 방법", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.select :method, 
+            options_for_select([
+              ['전체', ''],
+              ['카드', 'card'],
+              ['계좌이체', 'transfer'],
+              ['가상계좌', 'virtual_account']
+            ], params[:method]), 
+            {}, 
+            class: "w-full border border-gray-300 rounded-md px-3 py-2" %>
+      </div>
+      
+      <div>
+        <%= form.label :start_date, "시작일", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.date_field :start_date, value: params[:start_date], 
+            class: "w-full border border-gray-300 rounded-md px-3 py-2" %>
+      </div>
+      
+      <div>
+        <%= form.label :end_date, "종료일", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.date_field :end_date, value: params[:end_date], 
+            class: "w-full border border-gray-300 rounded-md px-3 py-2" %>
+      </div>
+      
+      <div class="md:col-span-4 flex gap-2">
+        <%= form.submit "필터 적용", 
+            class: "bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600" %>
+        <%= link_to "초기화", payment_details_path, 
+            class: "bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400" %>
+      </div>
+    <% end %>
+  </div>
 
-    <%% if respond_to?(:paginate) && @payment_details.respond_to?(:current_page) %>
-      <div class="d-flex justify-content-center mt-4">
-        <%%= paginate @payment_details %>
-      </div>
-    <%% end %>
-  <%% else %>
-    <div class="card">
-      <div class="card-body text-center py-5">
-        <div class="mb-4">
-          <i class="fas fa-credit-card fa-3x text-muted"></i>
-        </div>
-        <h4 class="text-muted">결제 상세 정보가 없습니다</h4>
-        <p class="text-muted">아직 등록된 결제 정보가 없습니다.</p>
-      </div>
+  <%# 결제 목록 %>
+  <div class="bg-white shadow overflow-hidden sm:rounded-md">
+    <ul class="divide-y divide-gray-200">
+      <% @payment_details.each do |payment| %>
+        <li>
+          <%= link_to payment_detail_path(payment), class: "block hover:bg-gray-50" do %>
+            <div class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                      <span class="text-sm font-medium text-gray-700">
+                        <%= payment.method&.first&.upcase %>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="flex items-center">
+                      <p class="text-sm font-medium text-gray-900">
+                        <%= payment.order_name %>
+                      </p>
+                      <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        <%= payment.successful? ? 'bg-green-100 text-green-800' : 
+                            payment.failed? ? 'bg-red-100 text-red-800' : 
+                            'bg-yellow-100 text-yellow-800' %>">
+                        <%= payment.status_name %>
+                      </span>
+                    </div>
+                    <div class="mt-1 flex items-center text-sm text-gray-500">
+                      <p>주문번호: <%= payment.order_id %></p>
+                      <span class="mx-2">•</span>
+                      <p>결제키: <%= payment.payment_key %></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-lg font-semibold text-gray-900">
+                    <%= payment.formatted_total_amount %>
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    <%= payment.approved_at&.strftime("%Y년 %m월 %d일 %H:%M") %>
+                  </p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <%# 페이지네이션 %>
+  <% if @payment_details.respond_to?(:current_page) %>
+    <div class="mt-6">
+      <%= paginate @payment_details %>
     </div>
-  <%% end %>
-</div>
+  <% end %>
+</div> 

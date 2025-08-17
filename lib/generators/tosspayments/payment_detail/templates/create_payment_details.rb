@@ -1,77 +1,48 @@
-class CreatePaymentDetails < ActiveRecord::Migration[7.0]
+class CreatePaymentDetails < ActiveRecord::Migration[<%= Rails::VERSION::MAJOR %>.<%= Rails::VERSION::MINOR %>]
   def change
     create_table :payment_details do |t|
       t.string :payment_key, null: false, index: { unique: true }
-      t.string :order_id, null: false
+      t.string :order_id, null: false, index: true
       t.string :order_name
-      t.string :method
-      t.string :status, default: 'PENDING'
-      t.datetime :requested_at
-      t.datetime :approved_at
-      t.boolean :use_escrow, default: false
-      
-      # 카드 결제 정보
-      t.json :card
-      
-      # 가상계좌 정보
-      t.json :virtual_account
-      
-      # 계좌이체 정보
-      t.json :transfer
-      
-      # 휴대폰 결제 정보
-      t.json :mobile_phone
-      
-      # 상품권 정보
-      t.json :gift_certificate
-      
-      # 해외 간편결제 정보
-      t.json :foreign_easy_pay
-      
-      # 현금영수증 정보
-      t.json :cash_receipt
-      
-      # 할인 정보
-      t.json :discount
-      
-      # 취소 정보
-      t.json :cancels
-      
-      # 시크릿 정보
-      t.json :secret
-      
-      # 결제 타입
-      t.string :type
-      
-      # 간편결제 정보
-      t.json :easy_pay
-      
-      # 국가 정보
-      t.string :country
-      
-      # 실패 정보
-      t.json :failure
-      
-      # 금액 정보
-      t.integer :total_amount
+  t.string :payment_method, index: true
+      t.string :status, index: true
+      t.integer :total_amount, null: false
       t.integer :balance_amount
       t.integer :supplied_amount
       t.integer :vat
-      t.integer :tax_free_amount
       t.string :currency, default: 'KRW'
-      
-      # 영수증 URL
+      t.json :card
+      t.json :virtual_account
+      t.json :transfer
+      t.json :cancels
       t.string :receipt_url
+      t.datetime :approved_at, index: true
+      t.boolean :use_escrow, default: false
+      t.boolean :culture_expense, default: false
+      t.integer :tax_free_amount, default: 0
+      t.integer :tax_exemption_amount, default: 0
       
-      # 연관 모델 참조
-      t.references :payable, polymorphic: true, null: true
+      # 추가 결제 정보
+      t.string :requested_at
+      t.json :mobile_phone
+      t.json :gift_certificate
+      t.json :foreign_easy_pay
+      t.json :cash_receipt
+      t.json :discount
+      t.string :secret
+  t.string :payment_type
+      t.json :easy_pay
+      t.string :country
+      t.json :failure
       
+      # Polymorphic association
+      t.references :payable, polymorphic: true, index: true
+
       t.timestamps
     end
-    
-    add_index :payment_details, :order_id
-    add_index :payment_details, :status
-    add_index :payment_details, :method
-    add_index :payment_details, :created_at
+
+    add_index :payment_details, [:status, :created_at]
+  add_index :payment_details, [:payment_method, :created_at]
+    add_index :payment_details, [:approved_at, :status]
   end
 end 

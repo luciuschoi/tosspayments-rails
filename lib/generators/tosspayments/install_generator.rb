@@ -26,7 +26,7 @@ module Tosspayments
     end
 
     def create_migration
-      if Rails.version.start_with?('8.')
+      if ::Rails.version.start_with?('8.')
         migration_template 'create_payments.rb'
       else
         migration_template 'create_payments.rb', 'create_payments.rb'
@@ -208,13 +208,13 @@ module Tosspayments
     private
 
     def migration_version
-      if Rails.version.start_with?('5.')
+      if ::Rails.version.start_with?('5.')
         '[5.0]'
-      elsif Rails.version.start_with?('6.')
+      elsif ::Rails.version.start_with?('6.')
         '[6.0]'
-      elsif Rails.version.start_with?('7.')
+      elsif ::Rails.version.start_with?('7.')
         '[7.0]'
-      elsif Rails.version.start_with?('8.')
+      elsif ::Rails.version.start_with?('8.')
         '[8.0]'
       else
         ''

@@ -26,7 +26,20 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
     ls.readlines("\x0", chomp: true).reject do |f|
       (f == gemspec) ||
-        f.start_with?(*%w[bin/ Gemfile .gitignore]) ||
+        # 불필요하거나 외부 의존 디렉터리는 제외하여 빌드 에러를 방지합니다.
+        f.start_with?(*%w[
+          bin/
+          Gemfile
+          .git
+          .github/
+          .gitignore
+          .bundle/
+          vendor/
+          pkg/
+          tmp/
+          log/
+          .ruby-lsp/
+        ]) ||
         f.end_with?('.gem')
     end
   end

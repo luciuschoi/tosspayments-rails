@@ -28,12 +28,6 @@ module Tosspayments
         head :unauthorized
       end
 
-      def verify_tosspayments_webhook?
-        # 토스페이먼츠 웹훅 검증 로직
-        # 실제 구현시에는 토스페이먼츠에서 제공하는 서명 검증을 구현해야 합니다
-        true
-      end
-
       # 결제 승인 헬퍼
       def confirm_tosspayments_payment(payment_key:, order_id:, amount:)
         tosspayments_client.confirm_payment(

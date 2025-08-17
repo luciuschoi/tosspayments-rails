@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+# gem 로드 순서 보장: Pagy -> tosspayments-rails
+begin
+  require 'pagy'
+rescue LoadError
+  # Pagy가 Gemfile에 있으므로 정상이라면 로드됩니다.
+end
+
+require 'tosspayments-rails'
+
 # 토스페이먼츠 설정
 # Rails credentials를 사용하여 안전하게 키를 관리합니다.
 #

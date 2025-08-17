@@ -4,8 +4,16 @@ require 'rails/generators'
 
 module Tosspayments
   class InstallGenerator < ::Rails::Generators::Base
+    include Rails::Generators::Migration
+    
     # install 전용 템플릿 디렉터리
     source_root File.expand_path('templates', __dir__)
+
+    # Migration 번호 생성을 위한 클래스 메서드
+    def self.next_migration_number(dirname)
+      next_migration_number = current_migration_number(dirname) + 1
+      ActiveRecord::Migration.next_migration_number(next_migration_number)
+    end
 
     # 옵션 추가
     class_option :skip_assets, type: :boolean, default: false, desc: '스타일시트(tosspayments.css) 및 자동 등록을 건너뜁니다.'

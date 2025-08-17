@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class PaymentDetailsController < ApplicationController
-  include Pagy::Backend
+  skip_before_action :verify_tosspayments_webhook, rescue: false
   before_action :set_payment_detail, only: [:show]
+  include Pagy::Backend
 
-  def index
+  def index # rubocop:disable Metrics/AbcSize
     @payment_details = PaymentDetail.recent
 
     # 필터링
@@ -25,7 +26,7 @@ class PaymentDetailsController < ApplicationController
     # 결제 상세 정보는 이미 set_payment_detail에서 로드됨
   end
 
-  def statistics
+  def statistics # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : 1.month.ago
     end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.current
 

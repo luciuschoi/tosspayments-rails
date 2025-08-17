@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentsController < ApplicationController # rubocop:disable Metrics/ClassLength
+  skip_before_action :verify_tosspayments_webhook, rescue: false
   include Tosspayments::Rails::ControllerHelpers
 
   # 결제 페이지

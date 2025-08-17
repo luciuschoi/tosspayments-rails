@@ -22,7 +22,7 @@
   <div 
     class="tosspayments-payment-wrapper"
     data-controller="tosspayments"
-    data-tosspayments-client-key-value="<%= Rails.application.credentials.tosspayments&.client_key || 'YOUR_CLIENT_KEY' %>"
+    data-tosspayments-client-key-value="<%= Rails.application.credentials.tosspayments.dig(:tosspayments, :client_key) || 'YOUR_CLIENT_KEY' %>"
     data-tosspayments-customer-key-value="<%= @customer_key || 'ANONYMOUS' %>"
     data-tosspayments-order-id-value="<%= @order_id %>"
     data-tosspayments-order-name-value="<%= @order_name %>"

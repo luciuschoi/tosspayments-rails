@@ -4,8 +4,8 @@ require 'rails/generators'
 
 module Tosspayments
   class InstallGenerator < ::Rails::Generators::Base
-    include Rails::Generators::Migration
-    
+    include ::Rails::Generators::Migration
+
     # install 전용 템플릿 디렉터리
     source_root File.expand_path('templates', __dir__)
 
@@ -138,8 +138,8 @@ module Tosspayments
           return
         end
         File.open(target, 'a') do |f|
-          f.puts ""
-          f.puts "@import \"tosspayments\";"
+          f.puts ''
+          f.puts '@import "tosspayments";'
         end
         say "[tosspayments] #{File.basename(target)} 에 @import 추가", :green
       else
@@ -173,8 +173,8 @@ module Tosspayments
 
         # Fallback append
         File.open(target, 'a') do |f|
-          f.puts ""
-          f.puts "/*= require tosspayments */"
+          f.puts ''
+          f.puts '/*= require tosspayments */'
         end
         say "[tosspayments] #{File.basename(target)} 끝에 require 추가", :green
       end

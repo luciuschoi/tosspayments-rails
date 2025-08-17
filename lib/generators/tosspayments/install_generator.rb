@@ -125,7 +125,10 @@ module Tosspayments
           say '[tosspayments] Stylesheet 이미 import 됨', :blue
           return
         end
-        File.open(target, 'a') { |f| f.puts '\n@import "tosspayments";\n' }
+        File.open(target, 'a') do |f|
+          f.puts ""
+          f.puts "@import \"tosspayments\";"
+        end
         say "[tosspayments] #{File.basename(target)} 에 @import 추가", :green
       else
         # .css (Sprockets manifest) – require 구문 또는 require_tree 검사
@@ -157,7 +160,10 @@ module Tosspayments
         end
 
         # Fallback append
-        File.open(target, 'a') { |f| f.puts '\n/*= require tosspayments */\n' }
+        File.open(target, 'a') do |f|
+          f.puts ""
+          f.puts "/*= require tosspayments */"
+        end
         say "[tosspayments] #{File.basename(target)} 끝에 require 추가", :green
       end
     rescue StandardError => e

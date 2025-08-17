@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails/generators'
+require 'rails/generators/migration'
 
 module Tosspayments
   class InstallGenerator < ::Rails::Generators::Base
@@ -25,12 +26,10 @@ module Tosspayments
       template 'initializer.rb', 'config/initializers/tosspayments.rb'
     end
 
-    def create_migration
-      if ::Rails.version.start_with?('8.')
-        migration_template 'create_payments.rb'
-      else
-        migration_template 'create_payments.rb', 'create_payments.rb'
-      end
+    def create_payments_migration
+      # Rails::Generators::Migration#migration_template requires source and destination (2..3 args)
+      # Always write to db/migrate/create_payments.rb so Rails 8에서도 정상 동작
+      migration_template 'create_payments.rb', 'db/migrate/create_payments.rb'
     end
 
     def create_controller

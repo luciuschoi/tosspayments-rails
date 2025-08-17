@@ -50,6 +50,7 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   # Dependencies
   spec.add_dependency 'faraday', '~> 2.0'
   spec.add_dependency 'faraday-net_http', '~> 3.0'
+  spec.add_dependency 'pagy', '~> 8.0'
   # Rails 7.x 및 8.x 지원 (9.0 미만)
   spec.add_dependency 'rails', '>= 7.0', '< 9.0'
 

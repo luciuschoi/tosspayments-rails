@@ -3,6 +3,7 @@
 module Tosspayments
   module Rails
     module ViewHelpers
+      include Pagy::Frontend
       # 3자리 콤마 통화 포맷 (기본 한국 원화 표기)
       def tosspayments_format_amount(amount, currency: 'KRW', suffix: '원')
         num = amount.to_i
@@ -10,7 +11,12 @@ module Tosspayments
         currency == 'KRW' && suffix ? formatted + suffix : formatted
       end
 
-      # 토스페이먼츠 결제위젯 SDK 스크립트 태그
+      # 토스페이먼츠 결제위젯 SDK 스크립트 태그 (v1)
+      def tosspayments_v1_script_tag
+        content_tag :script, '', src: 'https://js.tosspayments.com/v1'
+      end
+
+      # 토스페이먼츠 결제위젯 SDK 스크립트 태그 (v2)
       def tosspayments_script_tag
         content_tag :script, '', src: 'https://js.tosspayments.com/v2/standard'
       end

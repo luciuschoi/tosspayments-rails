@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PaymentsController < ApplicationController
+class PaymentsController < ApplicationController # rubocop:disable Metrics/ClassLength
   include Tosspayments::Rails::ControllerHelpers
 
   # 결제 페이지
@@ -12,7 +12,7 @@ class PaymentsController < ApplicationController
   end
 
   # 결제 승인 처리
-  def create
+  def create # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
     payment_key = params[:paymentKey]
     order_id = params[:orderId]
     amount = params[:amount].to_i
@@ -45,7 +45,7 @@ class PaymentsController < ApplicationController
   end
 
   # 웹훅 처리 (토스페이먼츠에서 결제 상태 변경시 호출)
-  def webhook
+  def webhook # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
     data = params[:data] || {}
     payment_key = data[:paymentKey] || data['paymentKey']
     return head :bad_request unless payment_key
@@ -93,7 +93,7 @@ class PaymentsController < ApplicationController
       create_new_payment(payment_data)
     end
   rescue StandardError => e
-    log_payment_error("저장", e)
+    log_payment_error('저장', e)
   end
 
   def find_existing_payment(payment_key)
@@ -121,7 +121,7 @@ class PaymentsController < ApplicationController
     payment_detail.update!(status: status)
     Rails.logger.info "PaymentDetail 상태 업데이트 완료: #{payment_key} -> #{status}"
   rescue StandardError => e
-    log_payment_error("상태 업데이트", e)
+    log_payment_error('상태 업데이트', e)
   end
 
   def log_payment_error(operation, error)

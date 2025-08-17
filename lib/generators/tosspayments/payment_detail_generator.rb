@@ -6,26 +6,26 @@ require 'rails/generators/active_record'
 module Tosspayments
   # Generates PaymentDetail model, migration, controller, views & routes.
   class PaymentDetailGenerator < ::Rails::Generators::Base
-    include Rails::Generators::Migration
+    include ::Rails::Generators::Migration
 
     # Template directory ONLY for PaymentDetail artifacts (model, controller, views, migration, README)
-    # Install generator templates live in lib/generators/tosspayments/templates
-    source_root File.expand_path('templates', __dir__)
+    # Install generator templates live in lib/generators/tosspayments/payment_detail/templates
+    source_root File.expand_path('payment_detail/templates', __dir__)
 
     class_option :statistics, type: :boolean, default: true, desc: 'statistics 라우트 및 액션 안내 포함'
 
     desc '토스페이먼츠 결제 상세 정보 저장을 위한 PaymentDetail 모델/마이그레이션/뷰를 생성합니다.'
 
-    # Simplified unique migration number
+    # Rails 8+ compatible unique migration number
     def self.next_migration_number(dirname)
-      if ::ActiveRecord::Base.timestamped_migrations
-        Time.now.utc.strftime('%Y%m%d%H%M%S')
+      if ::ActiveRecord::Migration.respond_to?(:next_migration_number)
+        ::ActiveRecord::Migration.next_migration_number(current_migration_number(dirname) + 1)
       else
-        format('%03d', current_migration_number(dirname) + 1)
+        Time.now.utc.strftime('%Y%m%d%H%M%S')
       end
     end
 
-    def create_migration
+    def create_payment_details_migration
       migration_template 'create_payment_details.rb', 'db/migrate/create_payment_details.rb'
     end
 
@@ -40,7 +40,7 @@ module Tosspayments
     def create_views
       empty_directory 'app/views/payment_details'
       %w[index show].each do |view|
-        template "#{view}.html.erb", "app/views/payment_details/#{view}.html.erb"
+        copy_file "#{view}.html.erb", "app/views/payment_details/#{view}.html.erb"
       end
     end
 

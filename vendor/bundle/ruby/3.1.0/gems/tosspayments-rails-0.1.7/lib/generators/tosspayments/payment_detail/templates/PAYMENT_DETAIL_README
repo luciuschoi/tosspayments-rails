@@ -9,8 +9,10 @@ PaymentDetail 기능 생성 완료
 - app/controllers/payment_details_controller.rb
 - app/views/payment_details/index.html.erb
 - app/views/payment_details/show.html.erb
-<% if options[:statistics] %>- routes: payment_details + statistics (collection)
-<% else %>- routes: payment_details (index/show)
+<% if options[:statistics] %>
+- routes: payment_details + statistics (collection)
+<% else %>
+- routes: payment_details (index/show)
 <% end %>
 
 다음 단계:

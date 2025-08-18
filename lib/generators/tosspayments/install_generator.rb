@@ -32,6 +32,10 @@ module Tosspayments
       migration_template 'create_payments.rb', 'db/migrate/create_payments.rb'
     end
 
+    def create_model
+      template 'payment.rb', 'app/models/payment.rb'
+    end
+
     def create_controller
       template 'payments_controller.rb', 'app/controllers/payments_controller.rb'
     end

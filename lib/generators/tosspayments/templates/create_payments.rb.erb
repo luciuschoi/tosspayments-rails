@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreatePayments < ActiveRecord::Migration<%= migration_version %>
+class CreatePayments < ActiveRecord::Migration[<%= migration_version %>]
   def change
     create_table :payments do |t|
       t.string :order_id, null: false, comment: '주문 ID'

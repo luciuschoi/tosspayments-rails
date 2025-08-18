@@ -36,7 +36,9 @@ module Tosspayments
 
       # Rails::Generators::Migration#migration_template requires source and destination (2..3 args)
       # Always write to db/migrate/create_payments.rb so Rails 8에서도 정상 동작
-      migration_template 'create_payments.rb', 'db/migrate/create_payments.rb'
+      # migration_version 메소드를 템플릿 컨텍스트에서 사용할 수 있도록 전달
+      migration_template 'create_payments.rb', 'db/migrate/create_payments.rb', 
+                         migration_version: migration_version
       say "새로운 마이그레이션 파일 생성: db/migrate/create_payments.rb", :green
     end
 

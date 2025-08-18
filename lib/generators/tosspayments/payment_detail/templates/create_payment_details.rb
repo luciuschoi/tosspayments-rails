@@ -1,4 +1,4 @@
-class CreatePaymentDetails < ActiveRecord::Migration[<%= Rails::VERSION::MAJOR %>.<%= Rails::VERSION::MINOR %>]
+class CreatePaymentDetails < ActiveRecord::Migration<%= migration_version %>
   def change
     create_table :payment_details do |t|
       t.string :payment_key, null: false, index: { unique: true }

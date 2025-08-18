@@ -27,9 +27,17 @@ module Tosspayments
     end
 
     def create_payments_migration
+      # 기존 create_payments.rb 마이그레이션 파일이 존재하는 경우 제거
+      existing_migrations = Dir["db/migrate/*create_payments.rb"]
+      existing_migrations.each do |migration_file|
+        remove_file migration_file
+        say "기존 마이그레이션 파일 제거: #{migration_file}", :yellow
+      end
+
       # Rails::Generators::Migration#migration_template requires source and destination (2..3 args)
       # Always write to db/migrate/create_payments.rb so Rails 8에서도 정상 동작
       migration_template 'create_payments.rb', 'db/migrate/create_payments.rb'
+      say "새로운 마이그레이션 파일 생성: db/migrate/create_payments.rb", :green
     end
 
     def create_model

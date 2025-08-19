@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    tosspayments-rails (0.1.7)
+    tosspayments-rails (0.1.8)
       faraday (~> 2.0)
       faraday-net_http (~> 3.0)
       pagy (~> 8.0)

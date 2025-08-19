@@ -2,6 +2,6 @@
 
 module Tosspayments
   module Rails
-    VERSION = '0.1.7' # Generator alias path added for wider Rails lookup compatibility
+    VERSION = '0.1.8' # Generator alias path added for wider Rails lookup compatibility
   end
 end

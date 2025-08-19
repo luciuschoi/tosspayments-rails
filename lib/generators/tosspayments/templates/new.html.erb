@@ -1,42 +1,89 @@
-<%# -*- coding: utf-8 -*- %>
-<%# 토스페이먼츠 결제 페이지 %>
-<div class="payment-container">
-  <h1 class="payment-title">결제하기</h1>
-  
-  <div class="order-summary">
-    <h3>주문 정보</h3>
-    <div class="order-summary-row">
-      <span>상품명:</span>
-      <span><%= @order_name %></span>
-    </div>
-    <div class="order-summary-row">
-      <span>주문번호:</span>
-      <span><%= @order_id %></span>
-    </div>
-    <div class="order-summary-row order-summary-total">
-      <span>결제금액:</span>
-      <span><%= "#{@amount.to_s.gsub(/\B(?=(\d{3})+(?!\d))/, ',')}원" %></span>
-    </div>
-  </div>
 
-  <%# Stimulus 컨트롤러 사용 (tosspayments) - inline JS 제거 %>
-  <div 
-    class="tosspayments-payment-wrapper"
-    data-controller="tosspayments"
-    data-tosspayments-client-key-value="<%= Rails.application.credentials.dig(:tosspayments, :client_key) || 'YOUR_CLIENT_KEY' %>"
-    data-tosspayments-customer-key-value="<%= @customer_key || 'ANONYMOUS' %>"
-    data-tosspayments-order-id-value="<%= @order_id %>"
-    data-tosspayments-order-name-value="<%= @order_name %>"
-    data-tosspayments-success-url-value="<%= polymorphic_url([:success, :payments]) rescue 'http://localhost:3000/payments/success' %>"
-    data-tosspayments-fail-url-value="<%= polymorphic_url([:fail, :payments]) rescue 'http://localhost:3000/payments/fail' %>"
-  >
-    <div id="payment-widget" data-role="payment-widget"></div>
-    <div id="agreement" data-role="agreement"></div>
-    <button 
-      class="btn btn-primary tosspayments-payment-button" 
-      data-action="click->tosspayments#requestPayment"
+<div class="max-w-2xl mx-auto mt-8 p-6">
+  <div class="bg-white shadow-lg rounded-lg p-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">결제하기</h1>
+    
+    <!-- 게시글 정보 -->
+    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">게시글 정보</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">제목:</span>
+          <span class="font-medium"><%= @post.title %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">가격:</span>
+          <span class="font-medium text-blue-600"><%= @post.formatted_price %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 구매자 정보 -->
+    <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">구매자 정보</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">이름:</span>
+          <span class="font-medium"><%= @user.name %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">이메일:</span>
+          <span class="font-medium"><%= @user.email %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주문 요약 -->
+    <div class="mb-6 p-4 border-2 border-gray-200 rounded-lg">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">주문 요약</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-600">주문번호:</span>
+          <span class="font-mono text-sm"><%= @order_id %></span>
+        </div>
+        <div class="flex justify-between text-lg font-bold text-blue-600 pt-2 border-t">
+          <span>총 결제금액:</span>
+          <span><%= @post.formatted_price %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 토스페이먼츠 결제 위젯 -->
+    <div 
+      class="tosspayments-payment-wrapper"
+      data-controller="tosspayments"
+      <% client_key = Rails.application.credentials.dig(:tosspayments, :client_key) || (defined?(Tosspayments::Rails) && Tosspayments::Rails.configuration.client_key) %>
+      data-tosspayments-client-key-value="<%= client_key.to_s %>"
+      data-tosspayments-customer-key-value="<%= @customer_key %>"
+      data-tosspayments-order-id-value="<%= @order_id %>"
+      data-tosspayments-order-name-value="<%= @order_name %>"
+      data-tosspayments-amount-value="<%= @amount %>"
+      data-tosspayments-success-url-value="<%= request.base_url %>/payments/success"
+      data-tosspayments-fail-url-value="<%= request.base_url %>/payments/fail"
     >
-      결제하기
-    </button>
+      <% unless client_key.present? %>
+        <div class="mb-4 p-3 rounded bg-red-50 text-red-600 text-sm">
+          결제 클라이언트 키가 설정되지 않았습니다. <code>rails credentials:edit</code> 으로 <br/>
+          <pre class="text-xs mt-2">tosspayments:
+  client_key: test_ck_xxx
+  secret_key: test_sk_xxx
+  sandbox: true</pre>
+          를 추가한 뒤 서버를 재시작하세요.
+        </div>
+      <% end %>
+      <div id="payment-widget" data-role="payment-widget" class="mb-4"></div>
+      <div id="agreement" data-role="agreement" class="mb-4"></div>
+      <button 
+        class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 tosspayments-payment-button" 
+        data-action="click->tosspayments#requestPayment"
+      >
+        <%= @post.formatted_price %> 결제하기
+      </button>
+    </div>
+
+    <div class="mt-4 text-center">
+      <%= link_to "취소", post_path(@post), 
+          class: "text-gray-500 hover:text-gray-700 underline" %>
+    </div>
   </div>
 </div>

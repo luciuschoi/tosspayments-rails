@@ -1,15 +1,25 @@
 # frozen_string_literal: true
 
 class PaymentsController < ApplicationController # rubocop:disable Metrics/ClassLength
-  skip_before_action :verify_tosspayments_webhook, rescue: false
-  include Tosspayments::Rails::ControllerHelpers
+  # include Tosspayments::Rails::ControllerHelpers
 
   # 결제 페이지
   def new
-    @order_id = "ORDER_#{Time.current.to_i}_#{SecureRandom.hex(4)}"
-    @amount = params[:amount] || 15_000
-    @order_name = params[:order_name] || '토스 티셔츠 외 2건'
-    @customer_key = current_user&.id || "GUEST_#{SecureRandom.hex(8)}"
+    @post = Post.find(params[:post_id])
+    @user = User.find(params[:user_id])
+
+    # 이미 결제한 사용자인지 확인
+    if @post.paid_by_user?(@user)
+      flash[:notice] = '이미 결제하신 게시글입니다.'
+      redirect_to post_path(@post)
+      return
+    end
+
+    @order_id = "POST_#{@post.id}_USER_#{@user.id}_#{Time.current.to_i}"
+    # TossPayments 표준결제 금액은 원화 그대로 사용 (소수점 제거 정수)
+    @amount = @post.price.to_i
+    @order_name = @post.title
+    @customer_key = customer_key_for(@user)
   end
 
   # 결제 승인 처리
@@ -18,6 +28,17 @@ class PaymentsController < ApplicationController # rubocop:disable Metrics/Class
     order_id = params[:orderId]
     amount = params[:amount].to_i
 
+    # order_id에서 post_id와 user_id 추출
+    post_id, user_id = extract_ids_from_order_id(order_id)
+
+    unless post_id && user_id
+      redirect_to fail_payments_path(message: '잘못된 주문 정보입니다.')
+      return
+    end
+
+    post = Post.find(post_id)
+    user = User.find(user_id)
+
     result = confirm_tosspayments_payment(
       payment_key: payment_key,
       order_id: order_id,
@@ -25,9 +46,14 @@ class PaymentsController < ApplicationController # rubocop:disable Metrics/Class
     )
 
     if result[:success]
-      # 결제 성공 시 PaymentDetail 저장
-      save_payment_detail(result[:data]) if payment_detail_model_exists?
-      redirect_to success_payments_path(paymentKey: payment_key)
+      # Payment 레코드 생성
+      payment = create_payment_record(post, user, result[:data], amount)
+
+      if payment
+        redirect_to success_payments_path(paymentKey: payment_key, post_id: post.id)
+      else
+        redirect_to fail_payments_path(message: '결제 정보 저장에 실패했습니다.')
+      end
     else
       redirect_to fail_payments_path(message: result[:error])
     end
@@ -36,6 +62,7 @@ class PaymentsController < ApplicationController # rubocop:disable Metrics/Class
   # 결제 성공 페이지
   def success
     @payment_key = params[:paymentKey]
+    @post = Post.find(params[:post_id]) if params[:post_id]
     @payment = get_tosspayments_payment(@payment_key) if @payment_key
   end
 
@@ -70,6 +97,37 @@ class PaymentsController < ApplicationController # rubocop:disable Metrics/Class
   end
 
   private
+
+  # order_id에서 post_id와 user_id 추출
+  def extract_ids_from_order_id(order_id)
+    # 형식: "POST_#{post_id}_USER_#{user_id}_#{timestamp}"
+    match = order_id.match(/POST_(\d+)_USER_(\d+)_\d+/)
+    return nil unless match
+
+    [match[1].to_i, match[2].to_i]
+  end
+
+  # Payment 레코드 생성
+  def create_payment_record(post, user, payment_data, amount)
+    Payment.create!(
+      user: user,
+      post: post,
+      order_id: payment_data['orderId'],
+      payment_key: payment_data['paymentKey'],
+      amount: amount, # 이미 원 단위 정수
+      status: payment_data['status']&.downcase || 'done',
+      method: payment_data['method'],
+      customer_email: user.email,
+      customer_name: user.name,
+      order_name: payment_data['orderName'],
+      raw_data: payment_data.to_json,
+      paid_at: Time.current
+    )
+  rescue StandardError => e
+    Rails.logger.error "Payment 레코드 생성 실패: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    nil
+  end
 
   def current_user
     # 실제 애플리케이션에서는 인증된 사용자를 반환하도록 구현
@@ -179,5 +237,22 @@ class PaymentsController < ApplicationController # rubocop:disable Metrics/Class
     Time.parse(approved_at_string)
   rescue ArgumentError
     nil
+  end
+
+  # Toss Payments 고객 키 생성 (2~50자, 허용문자: A-Z a-z 0-9 - _ = . @)
+  def customer_key_for(user)
+    base = if user.respond_to?(:email) && user.email.present?
+             user.email.to_s.downcase
+           else
+             "user-#{user.id}"
+           end
+    # 제거: 허용되지 않는 문자
+    base = base.gsub(/[^A-Za-z0-9\-_=\.@]/, '')
+    base = "user-#{user.id}" if base.blank?
+    # 최대 50자
+    base = base[0, 50]
+    # 최소 2자 보장
+    base = base.ljust(2, '0') if base.length < 2
+    base
   end
 end

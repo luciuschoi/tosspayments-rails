@@ -28,19 +28,23 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
       (f == gemspec) ||
         # 불필요하거나 외부 의존 디렉터리는 제외하여 빌드 에러를 방지합니다.
         f.start_with?(*%w[
-          bin/
-          Gemfile
-          .git
-          .github/
-          .gitignore
-          .bundle/
-          vendor/
-          pkg/
-          tmp/
-          log/
-          .ruby-lsp/
-        ]) ||
-        f.end_with?('.gem')
+                          bin/
+                          Gemfile
+                          .git
+                          .github/
+                          .gitignore
+                          .bundle/
+                          vendor/
+                          pkg/
+                          tmp/
+                          log/
+                          .ruby-lsp/
+                          examples/
+                          test/
+                        ]) ||
+        f.end_with?('.gem') ||
+        # 루트 디렉터리의 gem 파일들 제외
+        (f =~ /\A[^\/]*\.gem\z/)
     end
   end
   spec.bindir = 'exe'

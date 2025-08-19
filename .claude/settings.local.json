@@ -1,3 +1,8 @@
 {
-  "outputStyle": "Korean Concise"
+  "outputStyle": "Korean Concise",
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)"
+    ]
+  }
 }

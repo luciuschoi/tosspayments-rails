@@ -18,4 +18,5 @@ end
 group :development, :test do
   gem 'minitest', '~> 5.22'
   gem 'minitest-reporters'
+  gem 'webmock', '~> 3.18'
 end

@@ -12,8 +12,8 @@ puts "[tosspayments-rails] VERSION => #{Tosspayments::Rails::VERSION}"
 # - TOSSPAY_CLIENT_KEY
 # - TOSSPAY_SECRET_KEY
 # - TOSSPAY_SANDBOX (기본: true)
-client_key = ENV['TOSSPAY_CLIENT_KEY']
-secret_key = ENV['TOSSPAY_SECRET_KEY']
+client_key = ENV.fetch('TOSSPAY_CLIENT_KEY', nil)
+secret_key = ENV.fetch('TOSSPAY_SECRET_KEY', nil)
 sandbox    = (ENV['TOSSPAY_SANDBOX'] || 'true') == 'true'
 
 # 설정 블록 (키가 없더라도 블록 실행은 안전합니다)
@@ -36,10 +36,11 @@ end
 client = Tosspayments::Rails::Client.new
 puts "Client initialized => #{client.class}"
 
-# 선택적으로 실제 API를 호출할 수 있습니다. (RUN_API=1, DUMMY_PAYMENT_KEY 필요)
-# 주의: 실제 호출 시 네트워크가 필요하며, 유효한 키가 없으면 당연히 실패합니다.
+# 선택적으로 실제 API를 호출하거나 모킹 테스트를 실행할 수 있습니다.
+# RUN_API=1: 실제 API 호출 (DUMMY_PAYMENT_KEY 필요)
+# RUN_MOCK=1: 모킹 테스트 (네트워크 불필요)
 if ENV['RUN_API'] == '1'
-  payment_key = ENV['DUMMY_PAYMENT_KEY']
+  payment_key = ENV.fetch('DUMMY_PAYMENT_KEY', nil)
   if payment_key.nil? || payment_key.empty?
     warn 'RUN_API=1 이지만 DUMMY_PAYMENT_KEY가 지정되지 않아 API 호출을 건너뜁니다.'
   else
@@ -51,7 +52,46 @@ if ENV['RUN_API'] == '1'
       warn "API call failed (expected in demo without valid keys): #{e.class}: #{e.message}"
     end
   end
+elsif ENV['RUN_MOCK'] == '1'
+  puts "\n=== 모킹 테스트 모드 ==="
+  puts "네트워크 없이 API 테스트를 실행합니다."
+  puts "상세한 모킹 테스트는 다음 명령어로 실행하세요:"
+  puts "bundle exec ruby examples/mock_test.rb"
+  
+  begin
+    require 'webmock'
+    WebMock.enable!
+    
+    # 간단한 모킹 테스트
+    test_payment_key = 'test_payment_key_demo'
+    mock_response = {
+      paymentKey: test_payment_key,
+      orderId: 'ORDER_DEMO',
+      orderName: '테스트 상품',
+      method: '카드',
+      totalAmount: 15000,
+      status: 'DONE'
+    }
+    
+    WebMock.stub_request(:get, "https://api.tosspayments.com/v1/payments/#{test_payment_key}")
+           .to_return(
+             status: 200,
+             body: mock_response.to_json,
+             headers: { 'Content-Type' => 'application/json' }
+           )
+    
+    puts "Mock API 호출 중..."
+    payment = client.get_payment(test_payment_key)
+    puts "✅ Mock 테스트 성공: #{payment[:orderName]}"
+    puts "   상태: #{payment[:status]}"
+    puts "   금액: #{payment[:totalAmount]}원"
+    
+    WebMock.disable!
+  rescue LoadError
+    warn "webmock gem이 필요합니다. 설치: bundle install"
+  rescue StandardError => e
+    warn "Mock 테스트 실패: #{e.class}: #{e.message}"
+  end
 end
 
 puts 'Done.'
-

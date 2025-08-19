@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
+require 'pagy'
+
 module Tosspayments
   module Rails
-    module ViewHelpers
+    module ViewHelpers # rubocop:disable Metrics/ModuleLength
       include Pagy::Frontend
+
       # 3자리 콤마 통화 포맷 (기본 한국 원화 표기)
       def tosspayments_format_amount(amount, currency: 'KRW', suffix: '원')
         num = amount.to_i

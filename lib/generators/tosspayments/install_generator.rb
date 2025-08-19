@@ -223,6 +223,18 @@ module Tosspayments
       RUBY
     end
 
+    def copy_walkthrough
+      source_walkthrough = File.expand_path('../../../../TOSSPAYMENTS_WALKTHROUGH.md', __dir__)
+      if File.exist?(source_walkthrough)
+        copy_file source_walkthrough, 'TOSSPAYMENTS_WALKTHROUGH.md'
+        say '[tosspayments] 가이드 문서 복사: TOSSPAYMENTS_WALKTHROUGH.md', :green
+      else
+        say "[tosspayments] 경고: 가이드 문서를 찾을 수 없습니다: #{source_walkthrough}", :yellow
+      end
+    rescue StandardError => e
+      say "가이드 문서 복사 중 오류: #{e.message}", :red
+    end
+
     def show_readme
       readme 'README' if behavior == :invoke
     rescue StandardError

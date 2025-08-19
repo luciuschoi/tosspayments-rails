@@ -65,5 +65,21 @@ module Tosspayments
     rescue StandardError
       # 템플릿 미존재시 실패 방지
     end
+
+    private
+
+    def migration_version
+      if ::Rails.version.start_with?('5.')
+        '[5.0]'
+      elsif ::Rails.version.start_with?('6.')
+        '[6.0]'
+      elsif ::Rails.version.start_with?('7.')
+        '[7.0]'
+      elsif ::Rails.version.start_with?('8.')
+        '[8.0]'
+      else
+        ''
+      end
+    end
   end
 end

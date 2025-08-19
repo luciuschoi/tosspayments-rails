@@ -9,11 +9,11 @@
       <div class="space-y-2">
         <div class="flex justify-between">
           <span class="text-gray-600">제목:</span>
-          <span class="font-medium"><%= @post.title %></span>
+          <span class="font-medium"><%%= @post.title %></span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">가격:</span>
-          <span class="font-medium text-blue-600"><%= @post.formatted_price %></span>
+          <span class="font-medium text-blue-600"><%%= @post.formatted_price %></span>
         </div>
       </div>
     </div>
@@ -24,11 +24,11 @@
       <div class="space-y-2">
         <div class="flex justify-between">
           <span class="text-gray-600">이름:</span>
-          <span class="font-medium"><%= @user.name %></span>
+          <span class="font-medium"><%%= @user.name %></span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">이메일:</span>
-          <span class="font-medium"><%= @user.email %></span>
+          <span class="font-medium"><%%= @user.email %></span>
         </div>
       </div>
     </div>
@@ -39,11 +39,11 @@
       <div class="space-y-2">
         <div class="flex justify-between">
           <span class="text-gray-600">주문번호:</span>
-          <span class="font-mono text-sm"><%= @order_id %></span>
+          <span class="font-mono text-sm"><%%= @order_id %></span>
         </div>
         <div class="flex justify-between text-lg font-bold text-blue-600 pt-2 border-t">
           <span>총 결제금액:</span>
-          <span><%= @post.formatted_price %></span>
+          <span><%%= @post.formatted_price %></span>
         </div>
       </div>
     </div>
@@ -52,16 +52,16 @@
     <div 
       class="tosspayments-payment-wrapper"
       data-controller="tosspayments"
-      <% client_key = Rails.application.credentials.dig(:tosspayments, :client_key) || (defined?(Tosspayments::Rails) && Tosspayments::Rails.configuration.client_key) %>
-      data-tosspayments-client-key-value="<%= client_key.to_s %>"
-      data-tosspayments-customer-key-value="<%= @customer_key %>"
-      data-tosspayments-order-id-value="<%= @order_id %>"
-      data-tosspayments-order-name-value="<%= @order_name %>"
-      data-tosspayments-amount-value="<%= @amount %>"
-      data-tosspayments-success-url-value="<%= request.base_url %>/payments/success"
-      data-tosspayments-fail-url-value="<%= request.base_url %>/payments/fail"
+      <%% client_key = Rails.application.credentials.dig(:tosspayments, :client_key) || (defined?(Tosspayments::Rails) && Tosspayments::Rails.configuration.client_key) %>
+      data-tosspayments-client-key-value="<%%= client_key.to_s %>"
+      data-tosspayments-customer-key-value="<%%= @customer_key %>"
+      data-tosspayments-order-id-value="<%%= @order_id %>"
+      data-tosspayments-order-name-value="<%%= @order_name %>"
+      data-tosspayments-amount-value="<%%= @amount %>"
+      data-tosspayments-success-url-value="<%%= request.base_url %>/payments/success"
+      data-tosspayments-fail-url-value="<%%= request.base_url %>/payments/fail"
     >
-      <% unless client_key.present? %>
+      <%% unless client_key.present? %>
         <div class="mb-4 p-3 rounded bg-red-50 text-red-600 text-sm">
           결제 클라이언트 키가 설정되지 않았습니다. <code>rails credentials:edit</code> 으로 <br/>
           <pre class="text-xs mt-2">tosspayments:
@@ -70,19 +70,19 @@
   sandbox: true</pre>
           를 추가한 뒤 서버를 재시작하세요.
         </div>
-      <% end %>
+      <%% end %>
       <div id="payment-widget" data-role="payment-widget" class="mb-4"></div>
       <div id="agreement" data-role="agreement" class="mb-4"></div>
       <button 
         class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 tosspayments-payment-button" 
         data-action="click->tosspayments#requestPayment"
       >
-        <%= @post.formatted_price %> 결제하기
+        <%%= @post.formatted_price %> 결제하기
       </button>
     </div>
 
     <div class="mt-4 text-center">
-      <%= link_to "취소", post_path(@post), 
+      <%%= link_to "취소", post_path(@post), 
           class: "text-gray-500 hover:text-gray-700 underline" %>
     </div>
   </div>

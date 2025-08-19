@@ -52,6 +52,17 @@ module Tosspayments
 
     def create_views
       empty_directory 'app/views/payments'
+      
+      # 템플릿에서 사용할 기본 변수 설정
+      @order_name = "샘플 상품"
+      @order_id = "ORDER_#{Time.now.strftime('%Y%m%d_%H%M%S')}"
+      @amount = 10000
+      @customer_key = "CUSTOMER_KEY"
+      @payment_key = nil
+      @payment = nil
+      @error_code = nil
+      @error_message = nil
+      
       %w[new success fail].each do |view|
         template "#{view}.html.erb", "app/views/payments/#{view}.html.erb"
       end
